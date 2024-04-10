@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <stdexcept>
 #include <iterator>
 
 template <typename Type>
@@ -87,6 +88,10 @@ class SingleLinkedList {
         // Возвращает ссылку на самого себя
         // Инкремент итератора, не указывающего на существующий элемент списка, приводит к неопределённому поведению
         BasicIterator& operator++() noexcept {
+            if(node_->next_node == nullptr) {
+                std::logic_error("Iterator is nullptr.");
+            }
+
             node_ = node_->next_node;
 	        return *this;
         }
@@ -96,6 +101,10 @@ class SingleLinkedList {
         // Инкремент итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         BasicIterator operator++(int) noexcept {
+            if(node_->next_node == nullptr) {
+                std::logic_error("Iterator is nullptr.");
+            }
+
             BasicIterator temp = *this;
 	        node_ = node_->next_node;
 	        return temp;
@@ -105,13 +114,21 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] reference operator*() const noexcept {
-            return (node_->value);
+            if(node_ == nullptr) {
+                std::logic_error("Iterator is nullptr.");
+            }
+
+            return (node_->value);         
         }
 
         // Операция доступа к члену класса. Возвращает указатель на текущий элемент списка
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] pointer operator->() const noexcept {
+            if(node_ == nullptr) {
+                std::logic_error("Iterator is nullptr.");
+            }
+
             return &(node_->value);
         }
 
@@ -156,14 +173,8 @@ public:
     }
    
     void swap(SingleLinkedList& other) noexcept {
-        Node temp(other.head_.value, other.head_.next_node);
-        size_t temp_size = other.size_;
-
-        other.head_.next_node = head_.next_node;
-        other.size_ = size_;
-
-        head_.next_node = temp.next_node;
-        size_ = temp_size;
+        std::swap(head_.next_node, other.head_.next_node);
+        std::swap(size_, other.size_);
     }
 
     // Возвращает количество элементов в списке
@@ -179,11 +190,11 @@ public:
     // Вставляет элемент value в начало списка за время O(1)
     void PushFront(const Type& value) {
         try {
-                head_.next_node = new Node(value, head_.next_node);
-                ++size_;
-            } catch(...) {
-                throw;
-            }
+            head_.next_node = new Node(value, head_.next_node);
+            ++size_;
+        } catch(...) {
+            throw;
+        }
     }
 
     // Очищает список за время O(N)
@@ -271,6 +282,10 @@ public:
      * Если при создании элемента будет выброшено исключение, список останется в прежнем состоянии
      */
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
+        if(pos.node_ == nullptr) {
+            std::logic_error("Iterator is nullptr.");
+        }
+
         pos.node_->next_node = new Node(value, pos.node_->next_node);
         ++size_;
         return static_cast<Iterator>(pos.node_->next_node);
