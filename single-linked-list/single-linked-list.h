@@ -93,7 +93,7 @@ class SingleLinkedList {
             }
 
             node_ = node_->next_node;
-	        return *this;
+            return *this;
         }
 
         // Оператор постинкремента. После его вызова итератор указывает на следующий элемент списка
@@ -104,10 +104,10 @@ class SingleLinkedList {
             if(node_->next_node == nullptr) {
                 std::logic_error("Iterator is nullptr.");
             }
-
+            
             BasicIterator temp = *this;
-	        node_ = node_->next_node;
-	        return temp;
+            node_ = node_->next_node;
+            return temp;
         }
 
         // Операция разыменования. Возвращает ссылку на текущий элемент
